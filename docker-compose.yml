@@ -4,7 +4,7 @@ services:
     ports:
       - "8000:80"
     volumes:
-      - ./api:/var/www/html
+      - ./src/api:/var/www/html
       - ./docker/conf/api.conf:/etc/nginx/conf.d/api.conf
       - ./docker/log:/var/log/nginx
     depends_on:
@@ -15,14 +15,14 @@ services:
     ports:
       - "8001:80"
     volumes:
-      - ./client:/var/www/html
+      - ./src/client:/var/www/html
       - ./docker/conf/client.conf:/etc/nginx/conf.d/client.conf
       - ./docker/log:/var/log/nginx
   php:
     build:
       context: ./docker
     volumes:
-      - ./api:/var/www/html
+      - ./src/api:/var/www/html
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
   mariadb:
