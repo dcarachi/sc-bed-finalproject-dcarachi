@@ -7,11 +7,12 @@ of a back-end solution, since the front-end client was not required to be implem
 
 ## Contents
 
-- **api**: Directory containing back-end web API source code written in PHP.
-- **client**: Directory for front-end client. Currently empty.
+- **src**: Directory containing source code:
+  - **api**: Back-end web API source code written in PHP.
+  - **client**: Directory for front-end client. Currently empty.
 - **docker**: Docker files for the PHP-FPM base image. The PHP version used is 8.3.
-- **support**: Directory for support files. Consists of:
-  - **db.sql**: SQL statements used to create the Kahuna DB.
+- **support**: Directory for support files:
+  - **db.sql**: SQL DDL and DML statements used to create the Kahuna DB.
   - **db.vuerd.json**: A physical ERD documenting the Kahuna DB schema.
   - **KahunaApp.postman_collection.json**: Postman tests used for the Kahuna back-end API testing.
   - **Test.postman_collection.json**: Postman environment variables used for the Kahuna API tests.
