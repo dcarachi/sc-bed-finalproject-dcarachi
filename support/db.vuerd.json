@@ -5,7 +5,7 @@
     "width": 2000,
     "height": 2000,
     "scrollTop": 0,
-    "scrollLeft": -1.4583,
+    "scrollLeft": -123.9966,
     "zoomLevel": 1,
     "show": 444,
     "database": 4,
@@ -1639,7 +1639,7 @@
         "comment": "",
         "dataType": "VARCHAR(20)",
         "default": "",
-        "options": 0,
+        "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
@@ -1648,7 +1648,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1729850611428,
+          "updateAt": 1730107368363,
           "createAt": 1729848919945
         }
       },
@@ -3059,7 +3059,7 @@
       {
         "name": 1729849381159,
         "dataType": 1729850297632,
-        "options(notNull)": 1729850611428
+        "options(notNull)": 1730107368361
       }
     ],
     "n5E2DIZdmfG7pZPZF7tbV": [
