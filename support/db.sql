@@ -30,8 +30,7 @@ CREATE TABLE IF NOT EXISTS Customer
     lastName    VARCHAR(35)     NOT NULL,
     email       VARCHAR(255)    NOT NULL,
     phone       VARCHAR(20)     NOT NULL,
-    address1    VARCHAR(100)    NOT NULL,
-    address2    VARCHAR(100),
+    address     VARCHAR(255)    NOT NULL,
     city        VARCHAR(50)     NOT NULL,
     country     VARCHAR(50)     NOT NULL,
     CONSTRAINT  FK_User_TO_Customer
