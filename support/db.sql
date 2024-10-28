@@ -5,8 +5,10 @@ USE kahuna;
 CREATE TABLE IF NOT EXISTS User
 (
     id          INT                     NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    username    VARCHAR(20)             NOT NULL,
-    password    VARCHAR(100)            NOT NULL,
+    email       VARCHAR(255)            NOT NULL,
+    password    VARCHAR(255)            NOT NULL,
+    firstName   VARCHAR(20)             NOT NULL,
+    lastName    VARCHAR(35)             NOT NULL,
     accessLevel ENUM('admin', 'client') NOT NULL DEFAULT 'client'
 );
 
@@ -22,23 +24,6 @@ CREATE TABLE IF NOT EXISTS AccessToken
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Customer
-(
-    id          INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId      INT             NOT NULL,
-    firstName   VARCHAR(20)     NOT NULL,
-    lastName    VARCHAR(35)     NOT NULL,
-    email       VARCHAR(255)    NOT NULL,
-    phone       VARCHAR(20)     NOT NULL,
-    address     VARCHAR(255)    NOT NULL,
-    city        VARCHAR(50)     NOT NULL,
-    country     VARCHAR(50)     NOT NULL,
-    CONSTRAINT  FK_User_TO_Customer
-        FOREIGN KEY (userId) REFERENCES User(id)
-        ON UPDATE CASCADE
-        ON DELETE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS Product
 (
     id              INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -47,16 +32,16 @@ CREATE TABLE IF NOT EXISTS Product
     warrantyLength  INT             NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS CustomerProduct
+CREATE TABLE IF NOT EXISTS UserProduct
 (
     id          INT     NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    customerId  INT     NOT NULL,
+    userId      INT     NOT NULL,
     productId   INT     NOT NULL,
-    CONSTRAINT  FK_Customer_TO_CustomerProduct
-        FOREIGN KEY (customerId) REFERENCES Customer(id)
+    CONSTRAINT  FK_User_TO_UserProduct
+        FOREIGN KEY (userId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT  FK_Product_TO_CustomerProduct
+    CONSTRAINT  FK_Product_TO_UserProduct
         FOREIGN KEY (productId) REFERENCES Product(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
