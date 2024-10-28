@@ -1275,7 +1275,7 @@
       "oEaXm03ykIazOIrcssZ4K": {
         "id": "oEaXm03ykIazOIrcssZ4K",
         "tableId": "vkDVgoHnoMdiKCrICKINr",
-        "name": "userName",
+        "name": "username",
         "comment": "",
         "dataType": "VARCHAR(20)",
         "default": "",
@@ -1288,7 +1288,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1729851011250,
+          "updateAt": 1730107702744,
           "createAt": 1729848322724
         }
       },
@@ -2857,7 +2857,7 @@
       1729848322723,
       -1,
       {
-        "name": 1729849452885,
+        "name": 1730107702744,
         "options(notNull)": 1729849960468,
         "dataType": 1729851011250
       }
