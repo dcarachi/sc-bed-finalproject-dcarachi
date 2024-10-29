@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS AccessToken
 (
     id          INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     token       VARCHAR(255)    NOT NULL,
-    birth       TIMESTAMP       NOT NULL,
+    birth       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     userId      INT             NOT NULL,
     CONSTRAINT  FK_User_TO_AccessToken
         FOREIGN KEY (userId) REFERENCES User(id)
@@ -32,13 +32,13 @@ CREATE TABLE IF NOT EXISTS Product
     warrantyLength  INT             NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS UserProduct
+CREATE TABLE IF NOT EXISTS ClientProduct
 (
     id          INT     NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId      INT     NOT NULL,
+    clientId    INT     NOT NULL,
     productId   INT     NOT NULL,
-    CONSTRAINT  FK_User_TO_UserProduct
-        FOREIGN KEY (userId) REFERENCES User(id)
+    CONSTRAINT  FK_User_TO_ClientProduct
+        FOREIGN KEY (clientId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT  FK_Product_TO_UserProduct
