@@ -2,8 +2,7 @@ CREATE DATABASE IF NOT EXISTS kahuna;
 
 USE kahuna;
 
-CREATE TABLE IF NOT EXISTS User
-(
+CREATE TABLE IF NOT EXISTS User(
     id          INT                     NOT NULL AUTO_INCREMENT PRIMARY KEY,
     email       VARCHAR(255)            NOT NULL,
     password    VARCHAR(255)            NOT NULL,
@@ -12,36 +11,34 @@ CREATE TABLE IF NOT EXISTS User
     accessLevel ENUM('admin', 'client') NOT NULL DEFAULT 'client'
 );
 
-CREATE TABLE IF NOT EXISTS AccessToken
-(
+CREATE TABLE IF NOT EXISTS AccessToken(
     id          INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     token       VARCHAR(255)    NOT NULL,
     birth       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     userId      INT             NOT NULL,
-    CONSTRAINT  FK_User_TO_AccessToken
+    CONSTRAINT c_user_accesstoken
         FOREIGN KEY (userId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Product
-(
+CREATE TABLE IF NOT EXISTS Product(
     id              INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
     serial          VARCHAR(50)     NOT NULL,
     name            VARCHAR(100)    NOT NULL,
     warrantyLength  INT             NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS ClientProduct
-(
-    id          INT     NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    clientId    INT     NOT NULL,
-    productId   INT     NOT NULL,
-    CONSTRAINT  FK_User_TO_ClientProduct
-        FOREIGN KEY (clientId) REFERENCES User(id)
+CREATE TABLE IF NOT EXISTS UserPurchase(
+    id            INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    userId        INT      NOT NULL,
+    productId     INT      NOT NULL,
+    purchaseDate  DATE     NOT NULL,
+    CONSTRAINT c_user_userpurchase
+        FOREIGN KEY (userId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT  FK_Product_TO_UserProduct
+    CONSTRAINT c_product_userpurchase
         FOREIGN KEY (productId) REFERENCES Product(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
