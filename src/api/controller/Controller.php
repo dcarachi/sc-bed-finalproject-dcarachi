@@ -43,7 +43,7 @@ class Controller
         return $user->getAccessLevel() === AccessLevel::Admin;
     }
 
-    public static function checkInputSet(array $requestData, array $fieldNames): array
+    public static function checkFieldsSet(array $requestData, array $fieldNames): array
     {
         return array_filter($fieldNames, fn($field): bool => !isset($requestData[$field]));
     }

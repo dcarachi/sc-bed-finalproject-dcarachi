@@ -10,7 +10,7 @@
     "show": 444,
     "database": 4,
     "databaseName": "",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -82,24 +82,24 @@
         "comment": "",
         "columnIds": [
           "HeoR5E2PaIN681jkfbGVV",
-          "oEaXm03ykIazOIrcssZ4K",
-          "Bz_8oxXfXws5BOEn-tCLQ",
           "_U_DV4iBlLSEIGCkC8heg",
           "A3evBMAWRcQ6pfSP1dU8K",
+          "oEaXm03ykIazOIrcssZ4K",
+          "Bz_8oxXfXws5BOEn-tCLQ",
           "TdWskSxbUaL3ZqX6zi7Oc"
         ],
         "seqColumnIds": [
           "KRQCc9fFLxP0GZJZALXu3",
           "adQOioCALCV8XaE6YkSIJ",
           "HeoR5E2PaIN681jkfbGVV",
-          "oEaXm03ykIazOIrcssZ4K",
           "-K9Fk0UFfKGDW7Cu69iAC",
           "o6bdZx7SIlhFpMEOrzQLg",
           "s1mKS9vsJgJg7zDzde0PH",
-          "Bz_8oxXfXws5BOEn-tCLQ",
           "_U_DV4iBlLSEIGCkC8heg",
           "A3evBMAWRcQ6pfSP1dU8K",
           "4JHb9sZxe5mRmd7lVTGft",
+          "oEaXm03ykIazOIrcssZ4K",
+          "Bz_8oxXfXws5BOEn-tCLQ",
           "TdWskSxbUaL3ZqX6zi7Oc",
           "Xjpmz_nlzUlAce9dwu77Y",
           "LetV0N9A3OkpaAiTcUxEH",
@@ -117,7 +117,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1730132808190,
+          "updateAt": 1730310714468,
           "createAt": 1729848208163
         }
       },
@@ -1072,18 +1072,18 @@
         "tableId": "vkDVgoHnoMdiKCrICKINr",
         "name": "firstName",
         "comment": "",
-        "dataType": "VARCHAR(20)",
+        "dataType": "VARCHAR(100)",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 75,
+          "widthDataType": 81,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730133427152,
+          "updateAt": 1730310706613,
           "createAt": 1730132579608
         }
       },
@@ -1092,18 +1092,18 @@
         "tableId": "vkDVgoHnoMdiKCrICKINr",
         "name": "lastName",
         "comment": "",
-        "dataType": "VARCHAR(35)",
+        "dataType": "VARCHAR(100)",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
-          "widthDataType": 75,
+          "widthDataType": 81,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730133422648,
+          "updateAt": 1730310710213,
           "createAt": 1730132674181
         }
       },
@@ -1742,7 +1742,7 @@
       -1,
       {
         "name": 1730132636413,
-        "dataType": 1730133427151,
+        "dataType": 1730310706612,
         "options(notNull)": 1730133269207
       }
     ],
@@ -1752,7 +1752,7 @@
       -1,
       {
         "name": 1730132678845,
-        "dataType": 1730133422647,
+        "dataType": 1730310710213,
         "options(notNull)": 1730133270055
       }
     ],

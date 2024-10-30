@@ -19,7 +19,7 @@ class ProductController extends Controller
             return;
         }
         $required = ['serial', 'name', 'warrantyLength'];
-        $missing = self::checkInputSet($data, $required);
+        $missing = self::checkFieldsSet($data, $required);
         if (!empty($missing)) {
             self::sendResponse(
                 code: 400,

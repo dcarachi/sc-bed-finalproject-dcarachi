@@ -4,10 +4,10 @@ USE kahuna;
 
 CREATE TABLE IF NOT EXISTS User(
     id          INT                     NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    email       VARCHAR(255)            NOT NULL,
+    firstName   VARCHAR(100)            NOT NULL,
+    lastName    VARCHAR(100)            NOT NULL,
+    email       VARCHAR(100)            NOT NULL,
     password    VARCHAR(255)            NOT NULL,
-    firstName   VARCHAR(20)             NOT NULL,
-    lastName    VARCHAR(35)             NOT NULL,
     accessLevel ENUM('admin', 'client') NOT NULL DEFAULT 'client'
 );
 
