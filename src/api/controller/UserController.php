@@ -35,7 +35,10 @@ class UserController extends Controller
                 );
             }
         } else {
-            self::sendResponse(code: 400, error: ['message' => 'One or more fields are missing.', 'requiredFields' => $required]);
+            self::sendResponse(
+                code: 400,
+                error: ['message' => 'One or more required fields are missing.', 'missingFields' => $missing]
+            );
         }
     }
 
