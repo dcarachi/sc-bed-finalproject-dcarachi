@@ -31,7 +31,7 @@ $router->map("POST", "/logout", "AuthController#logout", "auth_logout");
 $router->map("GET", "/token", "AuthController#verifyToken", "auth_verify_token");
 /** ------------------------------------------------------------------------------------------------------------------- */
 
-/** Customer Product Registration Routes ------------------------------------------------------------------------------ */
+/** Customer Purchase Registration Routes ------------------------------------------------------------------------------ */
 $router->map("POST", "/user/purchase", "UserPurchaseController#register", "user_register_purchase");
 $router->map("GET", "/user/purchase/[i:id]", "UserPurchaseController#get", "user_get_purchase");
 $router->map("GET", "/user/purchase", "UserPurchaseController#getAll", "user_get_all_purchases");
@@ -39,6 +39,8 @@ $router->map("GET", "/user/purchase", "UserPurchaseController#getAll", "user_get
 
 /** Product Management Routes ----------------------------------------------------------------------------------------- */
 $router->map("POST", "/product", "ProductController#add", "product_add");
+$router->map("GET", "/product/[i:id]", "ProductController#get", "product_get");
+$router->map("GET", "/product", "ProductController#getAll", "product_get_all" );
 /** ------------------------------------------------------------------------------------------------------------------- */
 
 $match = $router->match();

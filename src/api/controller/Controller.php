@@ -1,7 +1,11 @@
 <?php
 namespace com\icemalta\kahuna\api\controller;
 
-use com\icemalta\kahuna\api\model\AccessToken;
+use com\icemalta\kahuna\api\model\{
+    AccessToken,
+    AccessLevel,
+    User
+};
 
 class Controller
 {
@@ -24,5 +28,23 @@ class Controller
         }
         $token = new AccessToken($requestData['api_user'], $requestData['api_token']);
         return AccessToken::verify($token);
+    }
+
+    public static function checkAdminRights(array $requestData): bool
+    {
+        if (!isset($requestData['api_user'])) {
+            return false;
+        }
+        $user = new User(id: $requestData['api_user']);
+        $user = User::load($user);
+        if (!$user) {
+            return false;
+        }
+        return $user->getAccessLevel() === AccessLevel::Admin;
+    }
+
+    public static function checkInputSet(array $requestData, array $fieldNames): array
+    {
+        return array_filter($fieldNames, fn($field): bool => !isset($requestData[$field]));
     }
 }
