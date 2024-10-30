@@ -6,16 +6,16 @@ use \PDO;
 
 class User implements JsonSerializable
 {
+    private static PDO $db;
+
     private int $id;
-    private string $email;
-    private string $password;
-    private string $firstName;
-    private string $lastName;
+    private ?string $email;
+    private ?string $password;
+    private ?string $firstName;
+    private ?string $lastName;
     private AccessLevel $accessLevel;
 
-    private static PDO $dbh;
-
-    public function __construct(string $email, string $password, ?AccessLevel $accessLevel, ?string $firstName, ?string $lastName, ?int $id = 0)
+    public function __construct(?string $email = null, ?string $password = null, AccessLevel $accessLevel = AccessLevel::Client, ?string $firstName = null, ?string $lastName = null, int $id = 0)
     {
         $this->email = $email;
         $this->password = $password;
@@ -23,7 +23,7 @@ class User implements JsonSerializable
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->id = $id;
-        self::$dbh = DBConnect::getInstance()->getConnection();
+        self::$db = DBConnect::getInstance()->getConnection();
     }
 
     public function jsonSerialize(): array
@@ -50,13 +50,13 @@ class User implements JsonSerializable
             // Insert new user
             $sql = 'INSERT INTO User(email, password, firstName, lastName, accessLevel) VALUES
             (:email, :password, :firstName, :lastName, :accessLevel)';
-            $sth = self::$dbh->prepare($sql);
+            $sth = self::$db->prepare($sql);
             $sth->bindValue('email', $user->getEmail());
             $sth->bindValue('accessLevel', $user->getAccessLevel()->value);
         } else {
             // Update existing user
             $sql = 'UPDATE User SET password = :password, firstName = :firstName, lastName = :lastName WHERE id = :id';
-            $sth = self::$dbh->prepare($sql);
+            $sth = self::$db->prepare($sql);
             $sth->bindValue('id', $user->getId());
         }
         $sth->bindValue('password', $hashed);
@@ -66,9 +66,34 @@ class User implements JsonSerializable
 
         if ($sth->rowCount() > 0) {
             if ($user->getId() === 0) {
-                $user->setId(self::$dbh->lastInsertId());
+                $user->setId(self::$db->lastInsertId());
             }
             return $user;
+        }
+        return null;
+    }
+
+    /**
+     * Retrieve a user given a user id.
+     * @param \com\icemalta\kahuna\api\model\User $user The user object with the Id to search for.
+     * @return User|null Returns the fully populated `User` on success, or null on failure.
+     */
+    public static function load(User $user): ?User
+    {
+        $sql = 'SELECT * FROM User WHERE id = :id';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('id', $user->getId());
+        $sth->execute();
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        if ($result) {
+            return new User(
+                id: $result->id,
+                email: $result->email,
+                password: $result->password,
+                accessLevel: AccessLevel::from($result->accessLevel),
+                firstName: $result->firstName,
+                lastName: $result->lastName,
+            );
         }
         return null;
     }
@@ -82,7 +107,7 @@ class User implements JsonSerializable
     public static function authenticate(User $user): ?User
     {
         $sql = 'SELECT * FROM User WHERE email = :email';
-        $sth = self::$dbh->prepare($sql);
+        $sth = self::$db->prepare($sql);
         $sth->bindValue('email', $user->getEmail());
         $sth->execute();
 
@@ -91,7 +116,7 @@ class User implements JsonSerializable
             return new User(
                 email: $result->email,
                 password: $result->password,
-                accessLevel: $result->accessLevel,
+                accessLevel: AccessLevel::from($result->accessLevel),
                 firstName: $result->firstName,
                 lastName: $result->lastName,
                 id: $result->id
@@ -107,10 +132,10 @@ class User implements JsonSerializable
      */
     public static function isEmailAvailable(string $email): bool
     {
-        self::$dbh = DBConnect::getInstance()->getConnection();
+        self::$db = DBConnect::getInstance()->getConnection();
 
         $sql = 'SELECT COUNT(*) AS userCount FROM User WHERE User.email = :email';
-        $sth = self::$dbh->prepare($sql);
+        $sth = self::$db->prepare($sql);
         $sth->bindValue('email', $email);
         $sth->execute();
 
@@ -151,23 +176,23 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName): self
+    public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
         return $this;
