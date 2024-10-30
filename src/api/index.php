@@ -25,15 +25,16 @@ $router->map("POST", "/user", "UserController#register", "user_register");
 $router->map("GET", "/user", "UserController#getInfo", "user_get_info");
 /** ------------------------------------------------------------------------------------------------------------------- */
 
-/** Customer Product Routes ------------------------------------------------------------------------------------------- */
-$router->map("POST", "/user/product", "UserProductController#register", "user_product_add");
-$router->map("GET", "/user/product/[i:id]", "UserProductController#get", "user_product_get");
-$router->map("GET", "/user/products", "UserProductController#getAll", "user_product_get_all");
+/** User Authentication Routes ---------------------------------------------------------------------------------------- */
+$router->map("POST", "/login", "AuthController#login", "auth_login");
+$router->map("POST", "/logout", "AuthController#logout", "auth_logout");
+$router->map("GET", "/token", "AuthController#verifyToken", "auth_verify_token");
 /** ------------------------------------------------------------------------------------------------------------------- */
 
-/** User Authentication Routes ---------------------------------------------------------------------------------------- */
-$router->map("POST", "/login", "AuthController#login", "user_login");
-$router->map("POST", "/logout", "AuthController#logout", "user_logout");
+/** Customer Product Registration Routes ------------------------------------------------------------------------------ */
+$router->map("POST", "/user/purchase", "UserPurchaseController#register", "user_register_purchase");
+$router->map("GET", "/user/purchase/[i:id]", "UserPurchaseController#get", "user_get_purchase");
+$router->map("GET", "/user/purchase", "UserPurchaseController#getAll", "user_get_all_purchases");
 /** ------------------------------------------------------------------------------------------------------------------- */
 
 /** Product Management Routes ----------------------------------------------------------------------------------------- */
@@ -51,9 +52,9 @@ if (is_array($match)) {
         $requestData['api_user'] = $_SERVER['HTTP_X_API_USER'];
     }
     if (isset($_SERVER['HTTP_X_API_KEY'])) {
-        $requestData['api_token'] = $_SERVER['HTTP_X_API_USER'];
+        $requestData['api_token'] = $_SERVER['HTTP_X_API_KEY'];
     }
     call_user_func_array(__NAMESPACE__ . "\\controller\\$class::$action", [$params, $requestData]);
 } else {
-    Controller::sendResponse(code: 404, response: ['error' => 'Method not found.']);
+    Controller::sendResponse(code: 404, error: 'Method not found.');
 }
