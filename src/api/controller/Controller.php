@@ -1,21 +1,28 @@
 <?php
 namespace com\icemalta\kahuna\api\controller;
 
+use com\icemalta\kahuna\api\model\AccessToken;
+
 class Controller
 {
-    public static function sendResponse(mixed $response, int $code = 200): void
+    public static function sendResponse(mixed $data = null, int $code = 200, mixed $error = null): void
     {
+        if (!is_null($data)) {
+            $response['data'] = $data;
+        }
+        if (!is_null($error)) {
+            $response['error'] = $error;
+        }
         http_response_code($code);
         echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 
-    public static function checkFieldsSet(array $input, array $fieldsWanted): bool
+    public static function checkToken(array $requestData): bool
     {
-        foreach ($fieldsWanted as $key) {
-            if (!isset($input[$key])) {
-                return false;
-            }
+        if (!isset($requestData['api_user']) || !isset($requestData['api_token'])) {
+            return false;
         }
-        return true;
+        $token = new AccessToken($requestData['api_user'], $requestData['api_token']);
+        return AccessToken::verify($token);
     }
 }
