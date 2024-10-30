@@ -5,6 +5,6 @@ class ProductController extends Controller
 {
     public static function add(array $request, array $data): void
     {
-        self::sendResponse(code: 501, response: ['error' => 'Method not yet implemented.']);
+        self::sendResponse(code: 501, error: 'Method not yet implemented.');
     }
 }
