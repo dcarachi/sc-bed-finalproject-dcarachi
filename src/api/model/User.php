@@ -78,7 +78,7 @@ class User implements JsonSerializable
      * @param \com\icemalta\kahuna\api\model\User $user A user object with the id to search for.
      * @return User|null Returns the fully populated `User` on success, or null on failure.
      */
-    public static function load(User $user): ?User
+    public static function get(User $user): ?User
     {
         $sql = 'SELECT * FROM User WHERE id = :id';
         $sth = self::$db->prepare($sql);

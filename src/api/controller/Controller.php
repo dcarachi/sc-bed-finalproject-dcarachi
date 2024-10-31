@@ -36,7 +36,7 @@ class Controller
             return false;
         }
         $user = new User(id: $requestData['api_user']);
-        $user = User::load($user);
+        $user = User::get($user);
         if (!$user) {
             return false;
         }

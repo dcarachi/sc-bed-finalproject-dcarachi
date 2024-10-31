@@ -24,7 +24,7 @@ class UserController extends Controller
                 if (User::isEmailAvailable($user)) {
                     // Register user
                     $user = User::save($user);
-                    self::sendResponse($user);
+                    self::sendResponse(code: 201, data: $user);
                 } else {
                     self::sendResponse(code: 400, error: 'Email address given is not available.');
                 }
@@ -46,7 +46,7 @@ class UserController extends Controller
     {
         if (self::checkToken($data)) {
             $user = new User(id: $data['api_user']);
-            $user = User::load($user);
+            $user = User::get($user);
             self::sendResponse($user);
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
