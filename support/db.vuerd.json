@@ -5,7 +5,7 @@
     "width": 2000,
     "height": 2000,
     "scrollTop": 0,
-    "scrollLeft": -3,
+    "scrollLeft": -6,
     "zoomLevel": 1,
     "show": 444,
     "database": 4,
@@ -213,7 +213,7 @@
           "dMcvBqw6eoqg9Qo0fFu2b"
         ],
         "ui": {
-          "x": 161,
+          "x": 131,
           "y": 478,
           "zIndex": 415,
           "widthName": 68,
@@ -221,7 +221,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1729865309816,
+          "updateAt": 1730361160508,
           "createAt": 1729850691625
         }
       }
@@ -993,17 +993,17 @@
         "name": "token",
         "comment": "",
         "dataType": "VARCHAR(255)",
-        "default": "",
+        "default": "CURRENT_TIMESTAMP",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 81,
-          "widthDefault": 60
+          "widthDefault": 122
         },
         "meta": {
-          "updateAt": 1729850917123,
+          "updateAt": 1730361157202,
           "createAt": 1729850882594
         }
       },
@@ -1216,7 +1216,7 @@
           "columnIds": [
             "dMcvBqw6eoqg9Qo0fFu2b"
           ],
-          "x": 331.5,
+          "x": 332.5,
           "y": 478,
           "direction": 4
         },
@@ -1691,7 +1691,8 @@
       {
         "name": 1729850884995,
         "options(notNull)": 1729850909290,
-        "dataType": 1729850917123
+        "dataType": 1729850917123,
+        "default": 1730361157202
       }
     ],
     "JFdAU8Mpo5t-DxvlKzxvT": [
