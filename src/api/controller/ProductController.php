@@ -40,7 +40,7 @@ class ProductController extends Controller
     {
         if (self::checkToken($data)) {
             $product = new Product(id: $request['id']);
-            $product = Product::load($product);
+            $product = Product::get($product);
             if ($product) {
                 self::sendResponse($product);
             } else {
@@ -54,7 +54,7 @@ class ProductController extends Controller
     public static function getAll(array $request, array $data): void
     {
         if (self::checkToken($data)) {
-            $products = Product::loadAll();
+            $products = Product::getAll();
             self::sendResponse($products);
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');

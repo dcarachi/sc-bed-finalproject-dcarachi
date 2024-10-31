@@ -54,11 +54,11 @@ class Product implements JsonSerializable
     }
 
     /**
-     * Retrieve a product from the database given a particular Id.
+     * Retrieves a product from the database given a particular Id.
      * @param \com\icemalta\kahuna\api\model\Product $product The product object containing the desired id.
      * @return Product|null Returns a Product with populated fields if successful, or null on failure.
      */
-    public static function load(Product $product): ?Product
+    public static function get(Product $product): ?Product
     {
         $sql = 'SELECT * FROM Product WHERE id = :id';
         $sth = self::$db->prepare($sql);
@@ -78,10 +78,36 @@ class Product implements JsonSerializable
     }
 
     /**
-     * Retrieve all products from the database.
+     * Retrieves a product from the database given a particular serial no.
+     * @param \com\icemalta\kahuna\api\model\Product $product The product object containing the desired serial no.
+     * @return Product|null Returns a Product with populated fields if successful, or null on failure.
+     */
+    public static function getBySerial(string $serial): ?Product
+    {
+        self::$db = DBConnect::getInstance()->getConnection();
+        
+        $sql = 'SELECT * FROM Product WHERE serial = :serial';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('serial', $serial);
+        $sth->execute();
+
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        if ($result) {
+            return new Product(
+                id: $result->id,
+                serial: $result->serial,
+                name: $result->name,
+                warrantyLength: $result->warrantyLength
+            );
+        }
+        return null;
+    }
+
+    /**
+     * Get all products from the database.
      * @return array An array containing Product objects with populated fields.
      */
-    public static function loadAll(): array
+    public static function getAll(): array
     {
         self::$db = DBConnect::getInstance()->getConnection();
 
