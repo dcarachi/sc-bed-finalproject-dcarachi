@@ -5,12 +5,12 @@
     "width": 2000,
     "height": 2000,
     "scrollTop": 0,
-    "scrollLeft": -6,
+    "scrollLeft": -8,
     "zoomLevel": 1,
     "show": 444,
-    "database": 4,
+    "database": 1,
     "databaseName": "",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -283,7 +283,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1729851588746,
+          "updateAt": 1730377377626,
           "createAt": 1729847953707
         }
       },
@@ -993,17 +993,17 @@
         "name": "token",
         "comment": "",
         "dataType": "VARCHAR(255)",
-        "default": "CURRENT_TIMESTAMP",
+        "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 81,
-          "widthDefault": 122
+          "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730361157202,
+          "updateAt": 1730377336075,
           "createAt": 1729850882594
         }
       },
@@ -1013,17 +1013,17 @@
         "name": "birth",
         "comment": "",
         "dataType": "TIMESTAMP",
-        "default": "",
+        "default": "CURRENT_TIMESTAMP",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 60,
           "widthComment": 60,
           "widthDataType": 65,
-          "widthDefault": 60
+          "widthDefault": 122
         },
         "meta": {
-          "updateAt": 1729850908229,
+          "updateAt": 1730377342410,
           "createAt": 1729850887202
         }
       },
@@ -1293,7 +1293,7 @@
       -1,
       {
         "name": 1729847972842,
-        "dataType": 1729851586777,
+        "dataType": 1730377377626,
         "options(notNull)": 1729851588746
       }
     ],
@@ -1692,7 +1692,7 @@
         "name": 1729850884995,
         "options(notNull)": 1729850909290,
         "dataType": 1729850917123,
-        "default": 1730361157202
+        "default": 1730377336074
       }
     ],
     "JFdAU8Mpo5t-DxvlKzxvT": [
@@ -1702,7 +1702,8 @@
       {
         "name": 1729850889563,
         "dataType": 1729850901898,
-        "options(notNull)": 1729850908229
+        "options(notNull)": 1729850908229,
+        "default": 1730377342410
       }
     ],
     "kALOfiCttQ6rbe8veaH9k": [
