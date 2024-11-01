@@ -16,30 +16,29 @@ CREATE TABLE IF NOT EXISTS AccessToken(
     token       VARCHAR(255)    NOT NULL,
     birth       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     userId      INT             NOT NULL,
-    CONSTRAINT c_user_accesstoken
+    CONSTRAINT c_accesstoken_user
         FOREIGN KEY (userId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS Product(
-    id              INT             NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    serial          VARCHAR(50)     NOT NULL,
+CREATE TABLE IF NOT EXISTS Product (
+    serial          VARCHAR(50)     NOT NULL PRIMARY KEY,
     name            VARCHAR(100)    NOT NULL,
-    warrantyLength  INT             NOT NULL
+    warrantyLength  CHAR(3)         NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS UserPurchase(
-    id            INT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    userId        INT      NOT NULL,
-    productId     INT      NOT NULL,
-    purchaseDate  DATE     NOT NULL,
-    CONSTRAINT c_user_userpurchase
-        FOREIGN KEY (userId) REFERENCES User(id)
+CREATE TABLE IF NOT EXISTS Purchase (
+    id            INT           NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    customerId    INT           NOT NULL,
+    productSerial VARCHAR(50)   NOT NULL,
+    purchaseDate  DATE          NOT NULL,
+    CONSTRAINT c_purchase_user
+        FOREIGN KEY (customerId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT c_product_userpurchase
-        FOREIGN KEY (productId) REFERENCES Product(id)
+    CONSTRAINT c_purchase_product
+        FOREIGN KEY (productSerial) REFERENCES Product(serial)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -47,13 +46,13 @@ CREATE TABLE IF NOT EXISTS UserPurchase(
 -- Initial product data
 
 INSERT INTO Product(serial, name, warrantyLength) VALUES
-    ('KHWM8199911', 'CombiSpin Washing Machine', 2),
-    ('KHWM8199912', 'CombiSpin + Dry Washing Machine', 2),
-    ('KHMW789991', 'CombiGrill Microwave', 1),
-    ('KHWP890001', 'K5 Water Pump', 5),
-    ('KHWP890002', 'K5 Heated Water Pump', 5),
-    ('KHSS988881', 'Smart Switch Lite', 2),
-    ('KHSS988882', 'Smart Switch Pro', 2),
-    ('KHSS988883', 'Smart Switch Pro V2', 2),
-    ('KHHM89762', 'Smart Heated Mug', 1),
-    ('KHSB0001', 'Smart Bulb 001', 1);
+    ('KHWM8199911', 'CombiSpin Washing Machine', 'P2Y'),
+    ('KHWM8199912', 'CombiSpin + Dry Washing Machine', 'P2Y'),
+    ('KHMW789991', 'CombiGrill Microwave', 'P2Y'),
+    ('KHWP890001', 'K5 Water Pump', 'P5Y'),
+    ('KHWP890002', 'K5 Heated Water Pump', 'P5Y'),
+    ('KHSS988881', 'Smart Switch Lite', 'P2Y'),
+    ('KHSS988882', 'Smart Switch Pro', 'P2Y'),
+    ('KHSS988883', 'Smart Switch Pro V2', 'P2Y'),
+    ('KHHM89762', 'Smart Heated Mug', 'P1Y'),
+    ('KHSB0001', 'Smart Bulb 001', 'P1Y');
