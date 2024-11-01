@@ -6,7 +6,7 @@ use \PDO;
 use \DateTime;
 use \DateInterval;
 
-class UserPurchase implements JsonSerializable
+class Purchase implements JsonSerializable
 {
     private static PDO $db;
 
@@ -24,7 +24,7 @@ class UserPurchase implements JsonSerializable
         self::$db = DBConnect::getInstance()->getConnection();
     }
 
-    public static function save(UserPurchase $userPurchase): ?UserPurchase
+    public static function save(Purchase $userPurchase): ?Purchase
     {
         $sql = 'INSERT INTO UserPurchase(userId, productId, purchaseDate) VALUES (:userId, :productId, :purchaseDate)';
         $sth = self::$db->prepare($sql);
@@ -49,16 +49,20 @@ class UserPurchase implements JsonSerializable
         return $sth->fetchAll(
             PDO::FETCH_FUNC,
             function (int $userId, int $productId, string $purchaseDate, int $id): UserPurchase {
-                return new UserPurchase($userId, $productId, new DateTime($purchaseDate), $id);
+                return new Purchase($userId, $productId, new DateTime($purchaseDate), $id);
             }
         );
     }
 
     public function jsonSerialize(): array
     {
+        $product = $this->getProductInfo();
         return [
             'id' => $this->getId(),
-            'product' => $this->getProductInfo()
+            'productSerial' => $product->getSerial(),
+            'productName' => $product->getName(),
+            'purchaseDate' => $this->getPurchaseDate()->format('Y-m-d'),
+            'warrantyLength' => $product->getWarrantyLength()->format('%y year(s)')
         ];
     }
 
@@ -88,25 +92,14 @@ class UserPurchase implements JsonSerializable
         return $this->purchaseDate;
     }
 
-    private function getProductInfo(): array
+    public function getProductInfo(): ?Product
     {
-        $result = [];
-        $product = new Product(id: $this->getId());
+        $product = new Product(id: $this->getProductId());
         $product = Product::get($product);
-        if ($product) {
-            // Calculate warranty remaining
-            $purchaseDate = clone($this->getPurchaseDate());
-            $warrantyEnd = $purchaseDate->add(new DateInterval('P' . $product->getWarrantyLength() . 'Y'));
-            $warrantyLeft = $warrantyEnd->diff(new DateTime("now"));
+        return $product;
+    }
 
-            $result = [
-                'serial' => $product->getSerial(),
-                'name' => $product->getName(),
-                'purchaseDate' => $this->getPurchaseDate()->format('Y-m-d'),
-                'warrantyLength' => $product->getWarrantyLength(),
-                'remainingWarranty' => $warrantyLeft->format('%y year(s), %m month(s), %d day(s)')
-            ];
-        }
-        return $result;
+    private static function calculateWarranty(DateInterval $warrantyLength)
+    {
     }
 }

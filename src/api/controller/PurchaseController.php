@@ -3,9 +3,9 @@ namespace com\icemalta\kahuna\api\controller;
 
 use \DateTime;
 use com\icemalta\kahuna\api\model\Product;
-use com\icemalta\kahuna\api\model\UserPurchase;
+use com\icemalta\kahuna\api\model\Purchase;
 
-class UserPurchaseController extends Controller
+class PurchaseController extends Controller
 {
     public static function register(array $request, array $data): void
     {
@@ -14,14 +14,15 @@ class UserPurchaseController extends Controller
             $missing = self::checkFieldsSet($data, $required);
             if (empty($missing)) {
                 // Check if serial number refers to a valid product.
-                $product = Product::getBySerial($data['serial']);
+                $product = new Product(serial: $data['serial']);
+                $product = Product::getBySerial($product);
                 if ($product) {
-                    $purchase = new UserPurchase(
+                    $purchase = new Purchase(
                         userId: $data['api_user'],
                         productId: $product->getId(),
                         purchaseDate: new DateTime($data['purchaseDate'])
                     );
-                    $purchase = UserPurchase::save($purchase);
+                    $purchase = Purchase::save($purchase);
                     self::sendResponse(code: 201, data: $purchase);
                 } else {
                     self::sendResponse(code: 400, error: 'Product with specified serial number does not exist.');
@@ -45,7 +46,7 @@ class UserPurchaseController extends Controller
     public static function getAll(array $request, array $data): void
     {
         if (self::checkToken($data)) {
-            $purchases = UserPurchase::getAll();
+            $purchases = Purchase::getAll();
             self::sendResponse($purchases);
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
