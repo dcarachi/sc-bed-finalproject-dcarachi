@@ -1,6 +1,7 @@
 <?php
 namespace com\icemalta\kahuna\api\controller;
 
+use \DateInterval;
 use com\icemalta\kahuna\api\model\Product;
 
 class ProductController extends Controller
@@ -18,10 +19,14 @@ class ProductController extends Controller
                     $product = new Product(
                         serial: $data['serial'],
                         name: $data['name'],
-                        warrantyLength: $data['warrantyLength']
+                        warrantyLength: new DateInterval('P' . $data['warrantyLength'] . 'Y')
                     );
                     $product = Product::save($product);
-                    self::sendResponse($product);
+                    if ($product) {
+                        self::sendResponse($product);
+                    } else {
+                        self::sendResponse(code: 500, error: 'Save product failed.');
+                    }
                 } else {
                     self::sendResponse(
                         code: 400,
