@@ -28,16 +28,16 @@ CREATE TABLE IF NOT EXISTS Product (
     warrantyLength  CHAR(3)         NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Purchase (
+CREATE TABLE IF NOT EXISTS CustomerProduct (
     id            INT           NOT NULL AUTO_INCREMENT PRIMARY KEY,
     customerId    INT           NOT NULL,
     productSerial VARCHAR(50)   NOT NULL,
     purchaseDate  DATE          NOT NULL,
-    CONSTRAINT c_purchase_user
+    CONSTRAINT c_customerproduct_user
         FOREIGN KEY (customerId) REFERENCES User(id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
-    CONSTRAINT c_purchase_product
+    CONSTRAINT c_customerproduct_product
         FOREIGN KEY (productSerial) REFERENCES Product(serial)
         ON UPDATE CASCADE
         ON DELETE CASCADE

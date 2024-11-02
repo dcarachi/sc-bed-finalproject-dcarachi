@@ -4,13 +4,13 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
-    "scrollLeft": -24,
+    "scrollTop": -85,
+    "scrollLeft": -105.8503,
     "zoomLevel": 1,
     "show": 444,
     "database": 1,
     "databaseName": "",
-    "canvasType": "ERD",
+    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -122,7 +122,7 @@
       },
       "q7nwXY_HJcY4Je5o_F8W6": {
         "id": "q7nwXY_HJcY4Je5o_F8W6",
-        "name": "Purchase",
+        "name": "CustomerProduct",
         "comment": "",
         "columnIds": [
           "D4XO0WSsZIt_NKq-X8jep",
@@ -141,12 +141,12 @@
           "x": 761,
           "y": 121,
           "zIndex": 243,
-          "widthName": 60,
+          "widthName": 95,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1730464137738,
+          "updateAt": 1730561041570,
           "createAt": 1729849563599
         }
       },
@@ -248,7 +248,7 @@
         "comment": "",
         "dataType": "VARCHAR(50)",
         "default": "",
-        "options": 11,
+        "options": 10,
         "ui": {
           "keys": 1,
           "widthName": 60,
@@ -257,7 +257,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730464109162,
+          "updateAt": 1730561126337,
           "createAt": 1729848152200
         }
       },
@@ -960,7 +960,7 @@
         "name": 1730464104073,
         "options(primaryKey)": 1729848162264,
         "dataType": 1730464109162,
-        "options(autoIncrement)": 1729849956899
+        "options(autoIncrement)": 1730561126336
       }
     ],
     "vkDVgoHnoMdiKCrICKINr": [
@@ -1122,7 +1122,7 @@
       1729849563599,
       -1,
       {
-        "name": 1730464137737
+        "name": 1730561041570
       }
     ],
     "D4XO0WSsZIt_NKq-X8jep": [
