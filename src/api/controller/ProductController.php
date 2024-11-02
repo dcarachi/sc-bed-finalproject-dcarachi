@@ -2,6 +2,7 @@
 namespace com\icemalta\kahuna\api\controller;
 
 use \DateInterval;
+use \DateMalformedIntervalStringException;
 use com\icemalta\kahuna\api\model\Product;
 
 class ProductController extends Controller
@@ -9,57 +10,42 @@ class ProductController extends Controller
     public static function add(array $request, array $data): void
     {
         // Check if user is authenticated...
-        if (self::checkToken($data)) {
-            // ...And is an admin.
-            if (self::checkAdminRights($data)) {
-                // Check if required input fields are set.
-                $required = ['serial', 'name', 'warrantyLength'];
-                $missing = self::checkFieldsSet($data, $required);
-                if (empty($missing)) {
-                    $product = new Product(
-                        serial: $data['serial'],
-                        name: $data['name'],
-                        warrantyLength: new DateInterval('P' . $data['warrantyLength'] . 'Y')
-                    );
-                    $product = Product::save($product);
-                    if ($product) {
-                        self::sendResponse($product);
-                    } else {
-                        self::sendResponse(code: 500, error: 'Save product failed.');
-                    }
-                } else {
-                    self::sendResponse(
-                        code: 400,
-                        error: ['message' => 'One or more required fields are missing.', 'missingFields' => $missing]
-                    );
-                }
-            } else {
-                self::sendResponse(code: 403, error: 'Insufficient access rights to perform this operation.');
-            }
-        } else {
+        if (!self::checkToken($data)) {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
+            return;
+        }
+        // ...And is an admin.
+        if (!self::checkAdminRights($data)) {
+            self::sendResponse(code: 403, error: 'Insufficient access rights to perform this operation.');
+            return;
+        }
+        // Check serial, name, and warrantyLength are set.
+        $serial = $data['serial'] ?? null;
+        $name = $data['name'] ?? null;
+        $warrantyLength = $data['warrantyLength'] ?? null;
+        if (!$serial || !$name || !$warrantyLength) {
+            self::sendResponse(code: 400, error: 'Missing one of `serial`, `name`, or `warrantyLength` fields.');
+            return;
+        }
+        // Verify warrantyLength is a valid ISO 8601 value.
+        try {
+            $warrantyLength = new DateInterval($warrantyLength);
+            $product = new Product($serial, $name, $warrantyLength);
+            $product = Product::save($product);
+            self::sendResponse(code: 201, data: $product);
+        } catch (DateMalformedIntervalStringException $e) {
+            self::sendResponse(code: 400, error: 'Field warrantyLength must be in ISO 8601 format.');
         }
     }
 
     public static function get(array $request, array $data): void
     {
         if (self::checkToken($data)) {
-            $product = new Product(id: $request['id']);
-            $product = Product::get($product);
-            if ($product) {
-                self::sendResponse($product);
+            if (isset($data['serial'])) {
+                $products = Product::get($data['serial']);
             } else {
-                self::sendResponse(code: 404, error: 'Product not found.');
+                $products = Product::getAll();
             }
-        } else {
-            self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
-        }
-    }
-
-    public static function getAll(array $request, array $data): void
-    {
-        if (self::checkToken($data)) {
-            $products = Product::getAll();
             self::sendResponse($products);
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');

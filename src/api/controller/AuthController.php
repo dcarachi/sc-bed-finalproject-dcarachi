@@ -11,43 +11,34 @@ class AuthController extends Controller
         self::sendResponse('Welcome to Kahuna API!');
     }
 
-    public static function login(array $request, array $data): void
+    public static function login(array $params, array $data): void
     {
-        if (!isset($data['email']) || !isset($data['password'])) {
-            self::sendResponse(code: 400, error: 'Missing email and/or password fields.');
-            return;
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+        if ($email && $password) {
+            $user = User::authenticate($email, $password);
+            if ($user) {
+                $token = new AccessToken(userId: $user->getId());
+                $token = AccessToken::save($token);
+                self::sendResponse(data: ['user' => $user->getId(), 'token' => $token->getToken()]);
+            } else {
+                self::sendResponse(code: 401, error: 'Login Failed.');
+            }
+        } else {
+            self::sendResponse(code: 400, error: 'Missing email or password fields.');
         }
-        $email = $data['email'];
-        $password = $data['password'];
-        $user = new User($email, $password);
-        $user = User::authenticate($user);
-        if (!$user) {
-            self::sendResponse(code: 401, error: 'Login failed.');
-            return;
-        }
-        $token = new AccessToken($user->getId());
-        $token = AccessToken::save($token);
-        if (!$token) {
-            self::sendResponse(code: 500, error: 'Unable to save token.');
-            return;
-        }
-        self::sendResponse(['user' => $user->getId(), 'token' => $token->getToken()]);
     }
 
-    public static function logout(array $request, array $data): void
+    public static function logout(array $params, array $data): void
     {
-        if (!self::checkToken($data)) {
-            self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
-            return;
+        if (self::checkToken($data)) {
+            $userId = $data['api_user'];
+            $token = new AccessToken(userId: $userId);
+            $token = AccessToken::delete($token);
+            self::sendResponse(data: ['message' => 'You have been logged out.']);
+        } else {
+            self::sendResponse(code: 403, error: 'Missing, invalid or expired token.');
         }
-        $userId = $data['api_user'];
-        $token = new AccessToken($userId);
-        $deleted = AccessToken::delete($token);
-        if (!$deleted) {
-            self::sendResponse(code: 500, error: 'Log out failed. Unable to delete token(s).');
-            return;
-        }
-        self::sendResponse('You have been logged out successfully.');
     }
 
     public static function verifyToken(array $request, array $data): void
@@ -55,7 +46,7 @@ class AuthController extends Controller
         if (self::checkToken($data)) {
             self::sendResponse(['valid' => true, 'token' => $data['api_token']]);
         } else {
-            self::sendResponse(['valid' => false, 'token' => $data['api_token']]);
+            self::sendResponse(['valid' => false, 'token' => $data['api_token'] ?? null]);
         }
     }
 }

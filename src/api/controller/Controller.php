@@ -15,10 +15,13 @@ class Controller
             $response['data'] = $data;
         }
         if (!is_null($error)) {
-            $response['error'] = $error;
+            $response['error'] = [
+                'message' => $error,
+                'code' => $code
+            ];
         }
         http_response_code($code);
-        echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        echo json_encode($response, JSON_UNESCAPED_UNICODE);
     }
 
     public static function checkToken(array $requestData): bool
@@ -35,8 +38,7 @@ class Controller
         if (!isset($requestData['api_user'])) {
             return false;
         }
-        $user = new User(id: $requestData['api_user']);
-        $user = User::get($user);
+        $user = User::get($requestData['api_user']);
         if (!$user) {
             return false;
         }

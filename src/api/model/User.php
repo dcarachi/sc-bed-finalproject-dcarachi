@@ -15,7 +15,7 @@ class User implements JsonSerializable
     private string $password;
     private AccessLevel $accessLevel;
 
-    public function __construct(string $email = '', string $password = '', AccessLevel $accessLevel = AccessLevel::Client, string $firstName = '', string $lastName = '', int $id = 0)
+    public function __construct(string $email, string $password, AccessLevel $accessLevel, string $firstName, string $lastName, int $id = 0)
     {
         self::$db = DBConnect::getInstance()->getConnection();
 
@@ -73,17 +73,19 @@ class User implements JsonSerializable
         }
         return null;
     }
-
+    
     /**
      * Retrieves a user with a given user id.
-     * @param \com\icemalta\kahuna\api\model\User $user The user object with the id to search for.
-     * @return User|null Returns the user data as a `User` object on success, or `null` on failure.
+     * @param int $id The id of the user to search for.
+     * @return User|null Returns a `User` on success, or `null` on failure.
      */
-    public static function get(User $user): ?User
+    public static function get(int $id): ?User
     {
+        self::$db = DBConnect::getInstance()->getConnection();
+
         $sql = 'SELECT * FROM User WHERE id = :id';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('id', $user->getId());
+        $sth->bindValue('id', $id);
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);
@@ -102,18 +104,21 @@ class User implements JsonSerializable
 
     /**
      * Authenticates a user.
-     * @param \com\icemalta\kahuna\api\model\User $user A user object with the email and password fields set.
-     * @return User|null Returns the complete user data if successful, or `null` on failure.
+     * @param string $email The user's email credential.
+     * @param string $password The user's password credential.
+     * @return User|null Returns the `User` if successful, or `null` on failure.
      */
-    public static function authenticate(User $user): ?User
+    public static function authenticate(string $email, string $password): ?User
     {
+        self::$db = DBConnect::getInstance()->getConnection();
+
         $sql = 'SELECT * FROM User WHERE email = :email';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('email', $user->getEmail());
+        $sth->bindValue('email', $email);
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);
-        if ($result && password_verify($user->getPassword(), $result->password)) {
+        if ($result && password_verify($password, $result->password)) {
             return new User(
                 id: $result->id,
                 firstName: $result->firstName,
@@ -131,13 +136,13 @@ class User implements JsonSerializable
      * @param string $email The email address to check for.
      * @return bool Returns `true` if the email address is available, `false` otherwise.
      */
-    public static function isEmailAvailable(User $user): bool
+    public static function isEmailAvailable(string $email): bool
     {
         self::$db = DBConnect::getInstance()->getConnection();
 
         $sql = 'SELECT COUNT(*) AS userCount FROM User WHERE email = :email';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('email', $user->getEmail());
+        $sth->bindValue('email', $email);
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);

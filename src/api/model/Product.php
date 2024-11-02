@@ -71,6 +71,8 @@ class Product implements JsonSerializable
      */
     public static function get(string $serial): ?Product
     {
+        self::$db = DBConnect::getInstance()->getConnection();
+        
         $sql = 'SELECT serial, name, warrantyLength FROM Product WHERE serial = :serial';
         $sth = self::$db->prepare($sql);
         $sth->bindValue('serial', $serial);

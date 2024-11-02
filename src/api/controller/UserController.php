@@ -8,45 +8,39 @@ class UserController extends Controller
 {
     public static function register(array $params, array $data): void
     {
-        // Check that the required input fields are present.
-        $required = ['email', 'password', 'firstName', 'lastName', 'accessLevel'];
-        $missing = self::checkFieldsSet($data, $required);
-        if (empty($missing)) {
-            // Ensure access level values are legal.
-            $accessLevel = AccessLevel::tryFrom($data['accessLevel']);
-            if ($accessLevel) {
-                $email = $data['email'];
-                $password = $data['password'];
-                $firstName = $data['firstName'];
-                $lastName = $data['lastName'];
-                $user = new User($email, $password, $accessLevel, $firstName, $lastName);
-                // Ensure email address is unique.
-                if (User::isEmailAvailable($user)) {
-                    // Register user
-                    $user = User::save($user);
-                    self::sendResponse(code: 201, data: $user);
-                } else {
-                    self::sendResponse(code: 400, error: 'Email address given is not available.');
-                }
-            } else {
-                self::sendResponse(
-                    code: 400,
-                    error: ['message' => 'Invalid access level specified.', 'allowedValues' => AccessLevel::cases()]
-                );
-            }
-        } else {
+        // Ensure required fields are set.
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+        $firstName = $data['firstName'] ?? null;
+        $lastName = $data['lastName'] ?? null;
+        $accessLevel = $data['accessLevel'] ?? null;
+        if (!$email || !$password || !$firstName || !$lastName || !$accessLevel) {
             self::sendResponse(
                 code: 400,
-                error: ['message' => 'One or more required fields are missing.', 'missingFields' => $missing]
+                error: 'Missing one of the required fields: `email`, `password`, `firstName`, `lastName`, `accessLevel`.'
             );
+            return;
         }
+        // Ensure a valid access level has been set.
+        if (!AccessLevel::tryFrom($accessLevel)) {
+            self::sendResponse(code: 400, error: 'Invalid access level specified. Must be one of `admin` or `client`.');
+            return;
+        }
+        // Check email address is unique.
+        if (!User::isEmailAvailable($email)) {
+            self::sendResponse(code: 400, error: 'Email address given is not available.');
+            return;
+        }
+        // Register user
+        $user = new User($email, $password, AccessLevel::from($accessLevel), $firstName, $lastName);
+        $user = User::save($user);
+        self::sendResponse(code: 201, data: $user);
     }
 
     public static function getInfo(array $request, array $data): void
     {
         if (self::checkToken($data)) {
-            $user = new User(id: $data['api_user']);
-            $user = User::get($user);
+            $user = User::get($data['api_user']);
             self::sendResponse($user);
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
