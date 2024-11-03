@@ -36,8 +36,15 @@ class CustomerProductController extends Controller
     public static function get(array $request, array $data): void
     {
         if (self::checkToken($data)) {
-            $purchases = CustomerProduct::getAll($data['api_user']);
-            self::sendResponse($purchases);
+            $customerProduct = new CustomerProduct(customerId: $data['api_user'], productSerial: $data['serial'] ?? null);
+            $result = CustomerProduct::get($customerProduct);
+            if ($result) {
+                error_log('Product found.');
+                self::sendResponse($result);
+            } else {
+                error_log('Product not found');
+                self::sendResponse(code: 404, error: 'No product registered.');
+            }
         } else {
             self::sendResponse(code: 401, error: 'Missing, invalid, or expired token.');
         }

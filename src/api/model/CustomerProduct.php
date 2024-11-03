@@ -13,16 +13,29 @@ class CustomerProduct implements JsonSerializable
 
     private int $id;
     private int $customerId;
-    private string $productSerial;
-    private DateTime $purchaseDate;
+    private ?string $productSerial;
+    private ?DateTime $purchaseDate;
 
-    public function __construct(int $customerId, string $productSerial, DateTime $purchaseDate, int $id = 0)
+    public function __construct(int $customerId, ?string $productSerial = null, ?DateTime $purchaseDate = null, int $id = 0)
     {
-        self::$db = DBConnect::getInstance()->getConnection();
         $this->customerId = $customerId;
         $this->productSerial = $productSerial;
         $this->purchaseDate = $purchaseDate;
         $this->id = $id;
+        self::$db = DBConnect::getInstance()->getConnection();
+    }
+
+    public function jsonSerialize(): array
+    {
+        $result['id'] = $this->getId();
+        $result['productSerial'] = $this->getProductSerial();
+        $product = Product::get($this->productSerial);
+        if ($product) {
+            $result['productName'] = $product->getName();
+            $result['warrantyLeft'] =
+                self::getWarrantyLeft($this->getPurchaseDate(), $product->getWarrantyLength());
+        }
+        return $result;
     }
 
     public static function save(CustomerProduct $customerProduct): ?CustomerProduct
@@ -42,48 +55,42 @@ class CustomerProduct implements JsonSerializable
         return null;
     }
 
-    public static function get(int $customerId, string $productSerial)
+    public static function get(CustomerProduct $customerProduct)
     {
-        self::$db = DBConnect::getInstance()->getConnection();
-        $sql = 'SELECT * FROM CustomerProduct WHERE customerId = :customerId AND productSerial = :productSerial';
-        $sth = self::$db->prepare($sql);
-        $sth->bindValue('customerId', $customerId);
-        $sth->bindValue('productSerial', $productSerial);
+        if ($customerProduct->getProductSerial()) {
+            // Get a particular customer product
+            $sql = <<<'SQL'
+                SELECT customerId, productSerial, purchaseDate, id FROM CustomerProduct
+                    WHERE customerId = :customerId AND productSerial = :productSerial;
+            SQL;
+            $sth = self::$db->prepare($sql);
+            $sth->bindValue('productSerial', $customerProduct->getProductSerial());
+        } else {
+            // Get all customer products
+            $sql = <<<'SQL'
+                SELECT customerId, productSerial, purchaseDate, id FROM CustomerProduct
+                    WHERE customerId = :customerId;
+            SQL;
+            $sth = self::$db->prepare($sql);
+        }
+        $sth->bindValue('customerId', $customerProduct->getCustomerId());
         $sth->execute();
 
-        $result = $sth->fetch(PDO::FETCH_OBJ);
-        if ($result) {
-            return new CustomerProduct(
-                id: $result->id,
-                customerId: $result->customerId,
-                productSerial: $result->productSerial,
-                purchaseDate: $result->purchaseDate
-            );
+        $result = $sth->fetchAll(
+            PDO::FETCH_FUNC,
+            fn($customerId, $productSerial, $purchaseDate, $id) =>
+            new CustomerProduct(
+                id: $id,
+                customerId: $customerId,
+                productSerial: $productSerial,
+                purchaseDate: new DateTime($purchaseDate),
+            )
+        );
+
+        if ($sth->rowCount() > 0) {
+            return $sth->rowCount() === 1 ? $result[0] : $result;
         }
         return null;
-    }
-
-    public static function getAll(int $customerId): array
-    {
-        self::$db = DBConnect::getInstance()->getConnection();
-        $sql = 'SELECT customerId, productSerial, purchaseDate, id FROM CustomerProduct WHERE customerId = :customerId';
-        $sth = self::$db->prepare($sql);
-        $sth->bindValue('customerId', $customerId);
-        $sth->execute();
-        return $sth->fetchAll(
-            PDO::FETCH_FUNC,
-            fn($customerId, $productSerial, $purchaseDate, $id)
-                => new CustomerProduct($customerId, $productSerial, new DateTime($purchaseDate), $id)
-        );
-    }
-
-    public function jsonSerialize(): array
-    {
-        $result['id'] = $this->getId();
-        $result['customerId'] = $this->getCustomerId();
-        $result['purchaseDate'] = $this->getPurchaseDate()->format('Y-m-d');
-        $result['product'] = $this->getProductInfo();
-        return $result;
     }
 
     public function getId(): int
@@ -102,35 +109,34 @@ class CustomerProduct implements JsonSerializable
         return $this->customerId;
     }
 
-    public function getProductSerial(): string
+    public function getProductSerial(): ?string
     {
         return $this->productSerial;
     }
 
-    public function getPurchaseDate(): DateTime
+    public function getPurchaseDate(): ?DateTime
     {
         return $this->purchaseDate;
     }
 
-    public function getProductInfo(): ?stdclass
+    private static function getWarrantyLeft(DateTime $purchaseDate, DateInterval $warrantyLength): string
     {
-        $product = Product::get($this->getProductSerial());
-        if ($product) {
-            $result = new stdClass();
-            $result->serial = $product->getSerial();
-            $result->productName = $product->getName();
-            $result->warrantyLength = $product->getWarrantyLength()->format('%y year(s)');
+        $expiryDate = $purchaseDate->add($warrantyLength);
+        $today = new DateTime();
+        $remaining = $today->diff($expiryDate);
 
-            // Calculate remaining warranty
-            $today = new DateTime();
-            $warrantyEndDate = $this->getPurchaseDate()->add($product->getWarrantyLength());
-            $warrantyRemaining = $warrantyEndDate->diff($today);
-            if ($warrantyRemaining->days > 0) {
-                $result->warrantyRemaining = $warrantyRemaining->format('%y year(s), %m month(s), and %d day(s)');
+        $result = 'expired';
+        if ($remaining->invert === 0) {
+            if ($remaining->y > 0) {
+                $result = $remaining->format('%y year(s)');
+            } else if ($remaining->m > 0) {
+                $result = $remaining->format('%m month(s)');
+            } else if ($remaining->d > 0) {
+                $result = $remaining->format('%d day(s)');
+            } else if ($remaining->h > 0) {
+                $result = $remaining->format('%h hour(s)');
             }
-
-            return $result;
         }
-        return null;
+        return $result;
     }
 }
