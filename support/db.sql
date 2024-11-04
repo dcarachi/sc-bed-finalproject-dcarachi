@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS AccessToken(
 CREATE TABLE IF NOT EXISTS Product (
     serial          VARCHAR(50)     NOT NULL PRIMARY KEY,
     name            VARCHAR(100)    NOT NULL,
-    warrantyLength  CHAR(3)         NOT NULL
+    warrantyLength  CHAR(5)         NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS CustomerProduct (

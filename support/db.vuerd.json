@@ -10,7 +10,7 @@
     "show": 444,
     "database": 1,
     "databaseName": "",
-    "canvasType": "@dineug/erd-editor/builtin-schema-sql",
+    "canvasType": "ERD",
     "language": 1,
     "tableNameCase": 4,
     "columnNameCase": 2,
@@ -226,7 +226,7 @@
         "tableId": "taB5KQhDwTuj5Ud-ciJoA",
         "name": "warrantyLength",
         "comment": "",
-        "dataType": "CHAR(3)",
+        "dataType": "CHAR(5)",
         "default": "",
         "options": 8,
         "ui": {
@@ -237,7 +237,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730459886932,
+          "updateAt": 1730716490082,
           "createAt": 1729847953707
         }
       },
@@ -948,7 +948,7 @@
       -1,
       {
         "name": 1729847972842,
-        "dataType": 1730459886932,
+        "dataType": 1730716490082,
         "options(notNull)": 1729851588746
       }
     ],
