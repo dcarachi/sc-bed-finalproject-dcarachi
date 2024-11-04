@@ -17,7 +17,7 @@ class UserController extends Controller
         if (!$email || !$password || !$firstName || !$lastName || !$accessLevel) {
             self::sendResponse(
                 code: 400,
-                error: 'Missing one of the required fields: `email`, `password`, `firstName`, `lastName`, `accessLevel`.'
+                error: 'Missing one of: `email`, `password`, `firstName`, `lastName`, or `accessLevel` fields.'
             );
             return;
         }
@@ -34,7 +34,11 @@ class UserController extends Controller
         // Register user
         $user = new User($email, $password, AccessLevel::from($accessLevel), $firstName, $lastName);
         $user = User::save($user);
-        self::sendResponse(code: 201, data: $user);
+        if ($user) {
+            self::sendResponse(code: 201, data: $user);
+        } else {
+            self::sendResponse(code: 500, error: 'Failed to insert or update user.');
+        }
     }
 
     public static function getInfo(array $request, array $data): void

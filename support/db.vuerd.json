@@ -226,18 +226,18 @@
         "tableId": "taB5KQhDwTuj5Ud-ciJoA",
         "name": "warrantyLength",
         "comment": "",
-        "dataType": "CHAR(5)",
+        "dataType": "VARCHAR(10)",
         "default": "",
         "options": 8,
         "ui": {
           "keys": 0,
           "widthName": 85,
           "widthComment": 60,
-          "widthDataType": 60,
+          "widthDataType": 75,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1730716490082,
+          "updateAt": 1730742295106,
           "createAt": 1729847953707
         }
       },
@@ -948,7 +948,7 @@
       -1,
       {
         "name": 1729847972842,
-        "dataType": 1730716490082,
+        "dataType": 1730742295106,
         "options(notNull)": 1729851588746
       }
     ],

@@ -1,11 +1,11 @@
 <?php
 namespace com\icemalta\kahuna\api\model;
 
-use \stdClass;
 use \JsonSerializable;
 use \PDO;
 use \DateTime;
 use \DateInterval;
+use com\icemalta\kahuna\api\helper\DateIntervalHelper;
 
 class CustomerProduct implements JsonSerializable
 {
@@ -15,82 +15,111 @@ class CustomerProduct implements JsonSerializable
     private int $customerId;
     private ?string $productSerial;
     private ?DateTime $purchaseDate;
+    private ?Product $productInfo = null;
 
-    public function __construct(int $customerId, ?string $productSerial = null, ?DateTime $purchaseDate = null, int $id = 0)
+    public function __construct(int $customerId, ?string $productSerial = null, ?string $purchaseDate = null, int $id = 0)
     {
         $this->customerId = $customerId;
         $this->productSerial = $productSerial;
-        $this->purchaseDate = $purchaseDate;
+        $this->purchaseDate = $purchaseDate ? new DateTime($purchaseDate) : null;
         $this->id = $id;
         self::$db = DBConnect::getInstance()->getConnection();
     }
 
     public function jsonSerialize(): array
     {
-        $result['id'] = $this->getId();
-        $result['productSerial'] = $this->getProductSerial();
-        $product = Product::get($this->productSerial);
-        if ($product) {
-            $result['productName'] = $product->getName();
+        $result = [
+            'id' => $this->getId(),
+            'customerId' => $this->getCustomerId(),
+            'productSerial' => $this->getProductSerial(),
+            'purchaseDate' => $this->getPurchaseDate()?->format('Y-m-d')
+        ];
+        if ($this->productInfo) {
+            $result['productName'] = $this->productInfo->getName();
             $result['warrantyLeft'] =
-                self::getWarrantyLeft($this->getPurchaseDate(), $product->getWarrantyLength());
+                self::getWarrantyLeft($this->getPurchaseDate(), $this->productInfo->getWarrantyLength());
         }
         return $result;
     }
 
-    public static function save(CustomerProduct $customerProduct): ?CustomerProduct
+    public static function save(CustomerProduct $custProduct): ?CustomerProduct
     {
-        $sql = 'INSERT INTO CustomerProduct(customerId, productSerial, purchaseDate) VALUES
-        (:customerId, :productSerial, :purchaseDate)';
-        $sth = self::$db->prepare($sql);
-        $sth->bindValue('customerId', $customerProduct->getCustomerId());
-        $sth->bindValue('productSerial', $customerProduct->getProductSerial());
-        $sth->bindValue('purchaseDate', $customerProduct->getPurchaseDate()->format('Y-m-d'));
+        if ($custProduct->getId() === 0) {
+            // Insert
+            $sql = <<<'SQL'
+                INSERT INTO CustomerProduct(customerId, productSerial, purchaseDate) VALUES
+                    (:customerId, :productSerial, :purchaseDate);
+            SQL;
+            $sth = self::$db->prepare($sql);
+        } else {
+            // Update
+            $sql = <<<'SQL'
+                UPDATE CustomerProduct
+                    SET customerId = :customerId, productSerial = :productSerial, purchaseDate = :purchaseDate
+                    WHERE id = :id;
+            SQL;
+            $sth = self::$db->prepare($sql);
+            $sth->bindValue('id', $custProduct->getId());
+        }
+        $sth->bindValue('customerId', $custProduct->getCustomerId());
+        $sth->bindValue('productSerial', $custProduct->getProductSerial());
+        $sth->bindValue('purchaseDate', $custProduct->getPurchaseDate()->format('Y-m-d'));
         $sth->execute();
 
         if ($sth->rowCount() > 0) {
-            $customerProduct->setId(self::$db->lastInsertId());
-            return $customerProduct;
+            if ($custProduct->getId() === 0) {
+                $custProduct->setId(self::$db->lastInsertId());
+            }
+            return $custProduct;
         }
         return null;
     }
 
-    public static function get(CustomerProduct $customerProduct)
+    public static function getProductInfo(CustomerProduct $custProduct): ?CustomerProduct
     {
-        if ($customerProduct->getProductSerial()) {
-            // Get a particular customer product
-            $sql = <<<'SQL'
-                SELECT customerId, productSerial, purchaseDate, id FROM CustomerProduct
-                    WHERE customerId = :customerId AND productSerial = :productSerial;
-            SQL;
-            $sth = self::$db->prepare($sql);
-            $sth->bindValue('productSerial', $customerProduct->getProductSerial());
-        } else {
-            // Get all customer products
-            $sql = <<<'SQL'
-                SELECT customerId, productSerial, purchaseDate, id FROM CustomerProduct
-                    WHERE customerId = :customerId;
-            SQL;
-            $sth = self::$db->prepare($sql);
-        }
-        $sth->bindValue('customerId', $customerProduct->getCustomerId());
+        $sql = <<<'SQL'
+            SELECT
+                customerId, productSerial, purchaseDate, id
+            FROM
+                CustomerProduct
+            WHERE customerId = :customerId AND productSerial = :productSerial;
+        SQL;
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('customerId', $custProduct->getCustomerId());
+        $sth->bindValue('productSerial', $custProduct->getProductSerial());
         $sth->execute();
 
-        $result = $sth->fetchAll(
-            PDO::FETCH_FUNC,
-            fn($customerId, $productSerial, $purchaseDate, $id) =>
-            new CustomerProduct(
-                id: $id,
-                customerId: $customerId,
-                productSerial: $productSerial,
-                purchaseDate: new DateTime($purchaseDate),
-            )
-        );
-
-        if ($sth->rowCount() > 0) {
-            return $sth->rowCount() === 1 ? $result[0] : $result;
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        if ($result) {
+            $result = new CustomerProduct(
+                id: $result->id,
+                customerId: $result->customerId,
+                productSerial: $result->productSerial,
+                purchaseDate: $result->purchaseDate
+            );
+            $result->productInfo = Product::get(new Product($result->productSerial));
+            return $result;
         }
         return null;
+    }
+
+    public static function getProducts(CustomerProduct $custProduct): array
+    {
+        $sql = <<<'SQL'
+            SELECT
+                customerId, productSerial, purchaseDate, id
+            FROM
+                CustomerProduct
+            WHERE customerId = :customerId;
+        SQL;
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('customerId', $custProduct->getCustomerId());
+        $sth->execute();
+
+        return $sth->fetchAll(
+            PDO::FETCH_FUNC,
+            fn(...$fields) => new CustomerProduct(...$fields)
+        );
     }
 
     public function getId(): int
@@ -125,18 +154,6 @@ class CustomerProduct implements JsonSerializable
         $today = new DateTime();
         $remaining = $today->diff($expiryDate);
 
-        $result = 'expired';
-        if ($remaining->invert === 0) {
-            if ($remaining->y > 0) {
-                $result = $remaining->format('%y year(s)');
-            } else if ($remaining->m > 0) {
-                $result = $remaining->format('%m month(s)');
-            } else if ($remaining->d > 0) {
-                $result = $remaining->format('%d day(s)');
-            } else if ($remaining->h > 0) {
-                $result = $remaining->format('%h hour(s)');
-            }
-        }
-        return $result;
+        return DateIntervalHelper::formatString($remaining);
     }
 }

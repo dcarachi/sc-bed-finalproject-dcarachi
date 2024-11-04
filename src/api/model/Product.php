@@ -1,6 +1,8 @@
 <?php
 namespace com\icemalta\kahuna\api\model;
 
+use com\icemalta\kahuna\api\helper\DateHelper;
+use com\icemalta\kahuna\api\helper\DateIntervalHelper;
 use \DateInterval;
 use \JsonSerializable;
 use \PDO;
@@ -10,16 +12,15 @@ class Product implements JsonSerializable
     private static PDO $db;
 
     private string $serial;
-    private string $name;
-    private DateInterval $warrantyLength;
+    private ?string $name;
+    private ?DateInterval $warrantyLength;
 
-    public function __construct(string $serial, string $name, DateInterval $warrantyLength)
+    public function __construct(string $serial, ?string $name = null, ?DateInterval $warrantyLength = null)
     {
-        self::$db = DBConnect::getInstance()->getConnection();
-
         $this->serial = $serial;
         $this->name = $name;
         $this->warrantyLength = $warrantyLength;
+        self::$db = DBConnect::getInstance()->getConnection();
     }
 
     public function jsonSerialize(): array
@@ -27,14 +28,15 @@ class Product implements JsonSerializable
         return [
             'serial' => $this->getSerial(),
             'name' => $this->getName(),
-            'warrantyLength' => $this->warrantyLength?->format('%y year(s)')
+            'warrantyLength' => $this->getWarrantyLength() ?
+                DateIntervalHelper::formatString($this->getWarrantyLength()) : null
         ];
     }
 
     /**
      * Performs an "upsert" of a Product.
      * @param \com\icemalta\kahuna\api\model\Product $product The product to insert or update to the DB.
-     * @return Product|null Returns the product if the operation was successful, or null on failure.
+     * @return Product|null Returns the product if the operation was successful, or `null` on failure.
      */
     public static function save(Product $product): ?Product
     {
@@ -46,11 +48,7 @@ class Product implements JsonSerializable
         $result = $sth->fetch(PDO::FETCH_OBJ);
         if ($result->itemCount > 0) {
             // Update
-            $sql = <<<'SQL'
-                UPDATE Product
-                    SET serial = :serial, name = :name, warrantyLength = :warrantyLength
-                    WHERE serial = :serial;
-            SQL;
+            $sql = 'UPDATE Product SET serial = :serial, name = :name, warrantyLength = :warrantyLength WHERE serial = :serial';
         } else {
             // Insert
             $sql = 'INSERT INTO Product(serial, name, warrantyLength) VALUES (:serial, :name, :warrantyLength)';
@@ -58,24 +56,37 @@ class Product implements JsonSerializable
         $sth = self::$db->prepare($sql);
         $sth->bindValue('serial', $product->getSerial());
         $sth->bindValue('name', $product->getName());
-        $sth->bindValue('warrantyLength', $product->getWarrantyLength()->format('P%yY'));
+        $sth->bindValue('warrantyLength', DateIntervalHelper::formatISO($product->getWarrantyLength()));
         $sth->execute();
 
         return $sth->rowCount() > 0 ? $product : null;
     }
 
     /**
-     * Retrieves a product from the DB given a serial no.
-     * @param string $serial The serial of the product to search for.
-     * @return Product|null Returns the Product if successful, or null on failure.
+     * Check if a product with a given serial number exists.
+     * @param \com\icemalta\kahuna\api\model\Product $product The product with the serial to check for.
+     * @return bool Returns `true` if it exists, `false` otherwise.
      */
-    public static function get(string $serial): ?Product
+    public static function exists(Product $product): bool
     {
-        self::$db = DBConnect::getInstance()->getConnection();
-        
+        $sql = 'SELECT COUNT(*) AS prodCount FROM Product WHERE serial = :serial';
+        $sth = self::$db->prepare($sql);
+        $sth->bindValue('serial', $product->getSerial());
+        $sth->execute();
+        $result = $sth->fetch(PDO::FETCH_OBJ);
+        return $result->prodCount > 0;
+    }
+
+    /**
+     * Retrieves a product from the DB with a given serial no.
+     * @param \com\icemalta\kahuna\api\model\Product $product The product containing the serial number to search for.
+     * @return Product|null Returns the product found, or `false` on failure.
+     */
+    public static function get(Product $product): ?Product
+    {
         $sql = 'SELECT serial, name, warrantyLength FROM Product WHERE serial = :serial';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('serial', $serial);
+        $sth->bindValue('serial', $product->getSerial());
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);
@@ -106,7 +117,7 @@ class Product implements JsonSerializable
         );
     }
 
-    public function getSerial(): ?string
+    public function getSerial(): string
     {
         return $this->serial;
     }

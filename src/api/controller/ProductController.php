@@ -27,14 +27,22 @@ class ProductController extends Controller
             self::sendResponse(code: 400, error: 'Missing one of `serial`, `name`, or `warrantyLength` fields.');
             return;
         }
-        // Verify warrantyLength is a valid ISO 8601 value.
+        // Ensure warrantyLength is a valid DateInterval.
         try {
-            $warrantyLength = new DateInterval($warrantyLength);
-            $product = new Product($serial, $name, $warrantyLength);
+            $product = new Product($serial, $name, new DateInterval($warrantyLength));
+            // Ensure product does not already exist in the DB.
+            if (Product::exists($product)) {
+                self::sendResponse(code: 400, error: "Product with serial number `{$product->getSerial()}` already exists.");
+                return;
+            }
             $product = Product::save($product);
-            self::sendResponse(code: 201, data: $product);
+            if ($product) {
+                self::sendResponse(code: 201, data: $product);
+            } else {
+                self::sendResponse(code: 500, error: 'Failed to insert or update product.');
+            }
         } catch (DateMalformedIntervalStringException $e) {
-            self::sendResponse(code: 400, error: 'Field warrantyLength must be in ISO 8601 format.');
+            self::sendResponse(code: 400, error: $e->getMessage());
         }
     }
 
@@ -42,7 +50,7 @@ class ProductController extends Controller
     {
         if (self::checkToken($data)) {
             if (isset($data['serial'])) {
-                $products = Product::get($data['serial']);
+                $products = Product::get(new Product(serial: $data['serial'])) ?? false;
             } else {
                 $products = Product::getAll();
             }

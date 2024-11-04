@@ -17,14 +17,13 @@ class User implements JsonSerializable
 
     public function __construct(string $email, string $password, AccessLevel $accessLevel, string $firstName, string $lastName, int $id = 0)
     {
-        self::$db = DBConnect::getInstance()->getConnection();
-
         $this->email = $email;
         $this->password = $password;
         $this->accessLevel = $accessLevel;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->id = $id;
+        self::$db = DBConnect::getInstance()->getConnection();
     }
 
     public function jsonSerialize(): array
