@@ -9,13 +9,13 @@ class User implements JsonSerializable
     private static PDO $db;
 
     private int $id;
-    private string $firstName;
-    private string $lastName;
-    private string $email;
-    private string $password;
-    private AccessLevel $accessLevel;
+    private ?string $firstName;
+    private ?string $lastName;
+    private ?string $email;
+    private ?string $password;
+    private ?AccessLevel $accessLevel;
 
-    public function __construct(string $email, string $password, AccessLevel $accessLevel, string $firstName, string $lastName, int $id = 0)
+    public function __construct(?string $email = null, ?string $password = null, ?AccessLevel $accessLevel = null, ?string $firstName = null, ?string $lastName = null, int $id = 0)
     {
         $this->email = $email;
         $this->password = $password;
@@ -39,8 +39,8 @@ class User implements JsonSerializable
 
     /**
      * Performs an "upsert" on the `User` table.
-     * @param \com\icemalta\kahuna\api\model\User $user The user instance to insert or update on the DB.
-     * @return User|null Returns the User with updated Id if successful, or null on failure.
+     * @param \com\icemalta\kahuna\api\model\User $user The user object to persist to the database.
+     * @return User|null Returns the User with updated fields if successful, or `null` on failure.
      */
     public static function save(User $user): ?User
     {
@@ -72,19 +72,17 @@ class User implements JsonSerializable
         }
         return null;
     }
-    
-    /**
-     * Retrieves a user with a given user id.
-     * @param int $id The id of the user to search for.
-     * @return User|null Returns a `User` on success, or `null` on failure.
-     */
-    public static function get(int $id): ?User
-    {
-        self::$db = DBConnect::getInstance()->getConnection();
 
+    /**
+     * Retrieves a User with a given user id.
+     * @param \com\icemalta\kahuna\api\model\User $user A User object with the id field to search for.
+     * @return User|null Returns the User with populated fields if successful, or `null` on failure.
+     */
+    public static function get(User $user): ?User
+    {
         $sql = 'SELECT * FROM User WHERE id = :id';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('id', $id);
+        $sth->bindValue('id', $user->getId());
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);
@@ -105,7 +103,7 @@ class User implements JsonSerializable
      * Authenticates a user.
      * @param string $email The user's email credential.
      * @param string $password The user's password credential.
-     * @return User|null Returns the `User` if successful, or `null` on failure.
+     * @return User|null Returns the User with populated fields if successful, or `null` on failure.
      */
     public static function authenticate(string $email, string $password): ?User
     {
@@ -130,18 +128,17 @@ class User implements JsonSerializable
         return null;
     }
 
-    /**
-     * Checks whether an email address can be used for registration.
-     * @param string $email The email address to check for.
-     * @return bool Returns `true` if the email address is available, `false` otherwise.
-     */
-    public static function isEmailAvailable(string $email): bool
-    {
-        self::$db = DBConnect::getInstance()->getConnection();
 
+    /**
+     * Checks whether a User email address can be used for registration.
+     * @param \com\icemalta\kahuna\api\model\User $user The user object with the email field to search for.
+     * @return bool Returns `true` if the email address is available for user, or `false` otherwise.
+     */
+    public static function isEmailAvailable(User $user): bool
+    {
         $sql = 'SELECT COUNT(*) AS userCount FROM User WHERE email = :email';
         $sth = self::$db->prepare($sql);
-        $sth->bindValue('email', $email);
+        $sth->bindValue('email', $user->getEmail());
         $sth->execute();
 
         $result = $sth->fetch(PDO::FETCH_OBJ);
@@ -159,7 +156,7 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -170,7 +167,7 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -181,7 +178,7 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getEmail(): string
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -192,7 +189,7 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -203,7 +200,7 @@ class User implements JsonSerializable
         return $this;
     }
 
-    public function getAccessLevel(): AccessLevel
+    public function getAccessLevel(): ?AccessLevel
     {
         return $this->accessLevel;
     }

@@ -35,8 +35,8 @@ class Product implements JsonSerializable
 
     /**
      * Performs an "upsert" of a Product.
-     * @param \com\icemalta\kahuna\api\model\Product $product The product to insert or update to the DB.
-     * @return Product|null Returns the product if the operation was successful, or `null` on failure.
+     * @param \com\icemalta\kahuna\api\model\Product $product The Product object to persist to the database.
+     * @return Product|null Returns the product with updated fields, if the operation was successful, or `null` on failure.
      */
     public static function save(Product $product): ?Product
     {
@@ -64,8 +64,8 @@ class Product implements JsonSerializable
 
     /**
      * Check if a product with a given serial number exists.
-     * @param \com\icemalta\kahuna\api\model\Product $product The product with the serial to check for.
-     * @return bool Returns `true` if it exists, `false` otherwise.
+     * @param \com\icemalta\kahuna\api\model\Product $product The Product object with the serial to check for.
+     * @return bool Returns `true` if a product exists, `false` otherwise.
      */
     public static function exists(Product $product): bool
     {
@@ -101,7 +101,7 @@ class Product implements JsonSerializable
     }
 
     /**
-     * Retrieves all products from the DB.
+     * Retrieves all products from the database.
      * @return array An array containing Product objects.
      */
     public static function getAll(): array

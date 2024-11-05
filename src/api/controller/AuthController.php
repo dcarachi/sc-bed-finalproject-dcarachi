@@ -11,6 +11,12 @@ class AuthController extends Controller
         self::sendResponse('Welcome to Kahuna API!');
     }
 
+    /**
+     * Authenticates a user.
+     * @param array $params Ignored.
+     * @param array $data An associative array with email and password fields set.
+     * @return void
+     */
     public static function login(array $params, array $data): void
     {
         $email = $data['email'] ?? null;
@@ -29,6 +35,12 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Logs out a user. Requires that the user is authenticated for the operation to be allowed.
+     * @param array $params
+     * @param array $data An associative array with the token fields `api_user` and `api_token` set.
+     * @return void
+     */
     public static function logout(array $params, array $data): void
     {
         if (self::checkToken($data)) {
@@ -41,6 +53,12 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Checks if the token is still valid and not expired.
+     * @param array $request Ignored.
+     * @param array $data An associative array with the token fields `api_user` and `api_token` set.
+     * @return void
+     */
     public static function verifyToken(array $request, array $data): void
     {
         if (self::checkToken($data)) {

@@ -42,6 +42,11 @@ class CustomerProduct implements JsonSerializable
         return $result;
     }
 
+    /**
+     * Performs an "upsert" on the CustomerProduct table.
+     * @param \com\icemalta\kahuna\api\model\CustomerProduct $custProduct The CustomerProduct object to persist to the database.
+     * @return CustomerProduct|null Returns the CustomerProduct with updated fields if successful, or `null` on failure.
+     */
     public static function save(CustomerProduct $custProduct): ?CustomerProduct
     {
         if ($custProduct->getId() === 0) {
@@ -75,6 +80,11 @@ class CustomerProduct implements JsonSerializable
         return null;
     }
 
+    /**
+     * Gets the Product details of a customer's registered product.
+     * @param \com\icemalta\kahuna\api\model\CustomerProduct $custProduct A CustomerProduct object with the customerId and productSerial fields to search for.
+     * @return CustomerProduct|null Returns the CustomerProduct with populated fields if found, or null if not found.
+     */
     public static function getProductInfo(CustomerProduct $custProduct): ?CustomerProduct
     {
         $sql = <<<'SQL'
@@ -103,6 +113,12 @@ class CustomerProduct implements JsonSerializable
         return null;
     }
 
+    /**
+     * Gets a list of customer registered products.
+     * @param \com\icemalta\kahuna\api\model\CustomerProduct $custProduct A CustomerProduct object with the customerId to search for.
+     * @return array Returns an enumerative array containing `CustomerProduct` objects that link a customer with a particular product registered.
+     * If there are no products registered, the array is empty.
+     */
     public static function getProducts(CustomerProduct $custProduct): array
     {
         $sql = <<<'SQL'

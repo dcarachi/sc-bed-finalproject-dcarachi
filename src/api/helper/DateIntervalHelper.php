@@ -3,8 +3,16 @@ namespace com\icemalta\kahuna\api\helper;
 
 use \DateInterval;
 
+/**
+ * Helper methods to format a DateInterval.
+ */
 class DateIntervalHelper
 {
+    /**
+     * Formats a DateInterval as a human readable string.
+     * @param \DateInterval $interval The DateInterval to format.
+     * @return string Returns a DateInterval in a human readable string such as: `2 year(s), 6 month(s), 4 day(s)`
+     */
     public static function formatString(DateInterval $interval): string
     {
         if ($interval->invert === 0) {
@@ -23,6 +31,11 @@ class DateIntervalHelper
         return 'expired';
     }
 
+    /**
+     * Formats a DateInterval as an ISO 8601 string.
+     * @param \DateInterval $interval The DateInterval to format.
+     * @return string Returns a DateInterval in an ISO 8601 formatted string such as: `P2Y6M4D'
+     */
     public static function formatISO(DateInterval $interval): string
     {
         if ($interval->invert === 0) {

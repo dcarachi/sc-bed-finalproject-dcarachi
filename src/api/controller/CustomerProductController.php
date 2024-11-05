@@ -7,6 +7,12 @@ use com\icemalta\kahuna\api\model\CustomerProduct;
 
 class CustomerProductController extends Controller
 {
+    /**
+     * Register a new product that the customer purchased. Requires that the user is authenticated for the operation to be allowed.
+     * @param array $request Ignored.
+     * @param array $data An associative array with token fields set, and fields 'serial', and 'purchaseDate' set.
+     * @return void
+     */
     public static function register(array $request, array $data): void
     {
         // Check if user is authenticated
@@ -34,6 +40,13 @@ class CustomerProductController extends Controller
         self::sendResponse(code: 201, data: $registration);
     }
 
+    /**
+     * Returns a summary of the user's products registered, or the details of a particular product registered if the serial key is set.
+     * Requires that the user is authenticated for the operation to be allowed.
+     * @param array $request
+     * @param array $data
+     * @return void
+     */
     public static function get(array $request, array $data): void
     {
         if (self::checkToken($data)) {

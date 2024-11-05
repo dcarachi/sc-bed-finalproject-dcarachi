@@ -7,6 +7,12 @@ use com\icemalta\kahuna\api\model\Product;
 
 class ProductController extends Controller
 {
+    /**
+     * Adds a new product to the list. Requires that the user is authenticated and has Admin AccessLevel for the operation to be allowed.
+     * @param array $request Ignored.
+     * @param array $data An associative array with token fields set, and fields `serial`, `name`, and `warrantyLength` set.
+     * @return void
+     */
     public static function add(array $request, array $data): void
     {
         // Check if user is authenticated...
@@ -46,6 +52,14 @@ class ProductController extends Controller
         }
     }
 
+    /**
+     * Obtains the entire product listing, or a single product if a serial is specified.
+     * Requires that the user is authenticated for the operation to be allowed.
+     * @param array $request Ignored.
+     * @param array $data An assoicative array with token fields set.
+     * If a `serial` value is included, only the product with that particular serial number is returned if it exists.
+     * @return void
+     */
     public static function get(array $request, array $data): void
     {
         if (self::checkToken($data)) {
