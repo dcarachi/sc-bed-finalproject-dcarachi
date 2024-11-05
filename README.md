@@ -12,8 +12,8 @@ of a back-end solution, since the front-end client was not required to be implem
   - **client**: Directory for front-end client. Currently empty.
 - **docker**: Docker files for the PHP-FPM base image. The PHP version used is 8.3.
 - **support**: Directory for support files:
-  - **db.sql**: SQL DDL and DML statements used to create the Kahuna DB.
-  - **db.vuerd.json**: A physical ERD documenting the Kahuna DB schema.
+  - **db.sql**: SQL DDL and DML statements used to create the Kahuna database.
+  - **db.vuerd.json**: A physical Entity Relationship Diagram (ERD) documenting the Kahuna database schema.
   - **KahunaApp.postman_collection.json**: Postman tests used for the Kahuna back-end API testing.
   - **Test.postman_collection.json**: Postman environment variables used for the Kahuna API tests.
   - **mswd-final-project.pdf**: Document describing the Kahuna final project assignment problem statement and requirements.
@@ -29,7 +29,10 @@ of a back-end solution, since the front-end client was not required to be implem
 4. Run the run.cmd script.  
     4.1. On Windows, type **.\run.cmd**.    
     4.2. On macOS or Linux, type: **./run.cmd**.
-5. Open [http://localhost:8001](https://localhost:8001) in your browser.
+5. Run Postman. Select File -> Import, and when presented with a dialog box drag the following files.
+    5.1. KahunaApp Tests: **support/KahunaApp.postman_collection.json**.
+    5.2. KahunaAPP Environment Variables: **support/Test.postman_environment.json**.
+6. You are now setup for testing the KahunaApp.
 
 ## Details
 

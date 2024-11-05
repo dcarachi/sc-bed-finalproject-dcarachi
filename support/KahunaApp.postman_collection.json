@@ -1,0 +1,563 @@
+{
+	"info": {
+		"_postman_id": "b6fcbfa7-5e8b-4ccc-885a-1dbe97027623",
+		"name": "KahunaApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36945445"
+	},
+	"item": [
+		{
+			"name": "Basic Tests",
+			"item": [
+				{
+					"name": "Connection Test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bogus Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URI}}/bogus",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"bogus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login as Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const result = pm.response.json();\r",
+									"if (result.data) {\r",
+									"    pm.environment.set('user', result.data.user);\r",
+									"    pm.environment.set('token', result.data.token);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "david.carachi@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "MyPassword123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/login",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login as Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const result = pm.response.json();\r",
+									"if (result.data) {\r",
+									"    pm.environment.set('user', result.data.user);\r",
+									"    pm.environment.set('token', result.data.token);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "mary.king@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "letmein",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/login",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/logout",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Token",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/token",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Register Administrator",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "david.carachi@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "MyPassword123",
+									"type": "text"
+								},
+								{
+									"key": "firstName",
+									"value": "David",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Carachi",
+									"type": "text"
+								},
+								{
+									"key": "accessLevel",
+									"value": "admin",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/user",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Customer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "mary.king@example.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "letmein",
+									"type": "text"
+								},
+								{
+									"key": "accessLevel",
+									"value": "client",
+									"type": "text"
+								},
+								{
+									"key": "firstName",
+									"value": "Mary",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "King",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/user",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/user",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Product Management",
+			"item": [
+				{
+					"name": "Add Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "serial",
+									"value": "KHTS0001",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Self-Regulated Thermos",
+									"type": "text"
+								},
+								{
+									"key": "warrantyLength",
+									"value": "P1Y6M",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/product",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/product?serial=KHWM8199911",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"product"
+							],
+							"query": [
+								{
+									"key": "serial",
+									"value": "KHWM8199911"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/product",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer Product Management",
+			"item": [
+				{
+					"name": "Register Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "serial",
+									"value": "KHTS0001",
+									"type": "text"
+								},
+								{
+									"key": "purchaseDate",
+									"value": "2023-06-29",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URI}}/user/product",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View Registration",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/user/product?serial=KHMW789991",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user",
+								"product"
+							],
+							"query": [
+								{
+									"key": "serial",
+									"value": "KHMW789991"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "View all Registrations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-api-user",
+								"value": "{{user}}",
+								"type": "text"
+							},
+							{
+								"key": "x-api-key",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URI}}/user/product",
+							"host": [
+								"{{BASE_URI}}"
+							],
+							"path": [
+								"user",
+								"product"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
