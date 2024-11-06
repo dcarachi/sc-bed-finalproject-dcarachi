@@ -33,7 +33,7 @@ The following is a list of the repository contents.
     > DB_USER=**User**  
     > DB_PASS=**Pass**
     >
-    > where **User** and **Pass** refer to the MariaDB username and password (see **Details** section for more information).
+    where **User** and **Pass** refer to the MariaDB username and password (see **Details** section for more information).
     
 5. Run the run.cmd script.
     1. On Windows, type **.\run.cmd**.    
