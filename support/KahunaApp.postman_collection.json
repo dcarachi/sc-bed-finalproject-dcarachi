@@ -49,7 +49,7 @@
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "Login as Admin",
+					"name": "Login as Administrator",
 					"event": [
 						{
 							"listen": "test",
@@ -208,7 +208,7 @@
 			"name": "User Management",
 			"item": [
 				{
-					"name": "Register Administrator",
+					"name": "Create Administrator Account",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -255,7 +255,7 @@
 					"response": []
 				},
 				{
-					"name": "Register Customer",
+					"name": "Create Customer Account",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -494,7 +494,7 @@
 					"response": []
 				},
 				{
-					"name": "View Registration",
+					"name": "View Product Details",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -529,7 +529,7 @@
 					"response": []
 				},
 				{
-					"name": "View all Registrations",
+					"name": "View all Product Registrations",
 					"request": {
 						"method": "GET",
 						"header": [
